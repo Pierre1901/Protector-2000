@@ -33,11 +33,11 @@ app.get("/api/stats", async (req, res) => {
             members: guild.memberCount,
             viewers: viewerRole?.members.size ?? 0,
             subs:    subRole?.members.size ?? 0,
-            warns:   0, // on branchera quand on aura la DB warns
+            warns:   0,
             bans:    0,
         });
     } catch (e) {
-        res.status(500).json({ error: "Erreur serveur" });
+        res.status(500).json({ error: "Server Error" });
     }
 });
 
