@@ -1,5 +1,5 @@
-import * as dotenv from "dotenv";
-dotenv.config({ path: "../.env" });
+import dotenv from "dotenv";
+dotenv.config();
 
 import { client } from "./client";
 import messageReactionAdd from "./events/messageReactionAdd";
