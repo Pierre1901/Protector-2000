@@ -11,6 +11,8 @@ client.on("messageReactionRemove", messageReactionRemove);
 
 client.once("ready", async () => {
     console.log(`🤖 Bot connecté en tant que ${client.user?.tag}`);
+    const guild = client.guilds.cache.first();
+    if (guild) await guild.members.fetch();
     startApiServer();
 });
 

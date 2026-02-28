@@ -1,4 +1,4 @@
 bot/node_modules/
-.env
+bot/.env
 dist/
 .idea

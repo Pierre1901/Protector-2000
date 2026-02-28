@@ -24,7 +24,7 @@ app.get("/api/stats", async (req, res) => {
         const guild = client.guilds.cache.first();
         if (!guild) return res.json({ members: 0, viewers: 0, subs: 0, warns: 0, bans: 0 });
 
-        await guild.members.fetch();
+         //await guild.members.fetch();
 
         const viewerRole = guild.roles.cache.get(config.viewerRoleId);
         const subRole    = guild.roles.cache.get(config.subRoleId);
@@ -46,8 +46,6 @@ app.get("/api/members", async (req, res) => {
         const guild = client.guilds.cache.first();
         if (!guild) return res.json([]);
 
-        await guild.members.fetch();
-
         const members = guild.members.cache
             .filter(m => !m.user.bot)
             .sort((a, b) => (b.joinedTimestamp ?? 0) - (a.joinedTimestamp ?? 0))
@@ -62,6 +60,7 @@ app.get("/api/members", async (req, res) => {
 
         res.json(members);
     } catch (e) {
+        console.error("MEMBERS ERROR:", e);
         res.status(500).json({ error: "Erreur serveur" });
     }
 });
