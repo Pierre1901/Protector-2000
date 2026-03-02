@@ -6,7 +6,6 @@ import {
 import { getRevenues, addRevenue, deleteRevenue, type Revenue } from "../api/Client";
 import { Panel } from "../components/Ui";
 
-// ── Couleurs par source ───────────────────────────────────────────────────────
 const SOURCE_COLORS: Record<string, string> = {
     bits:      "#f0b830",
     sub:       "#50c060",
@@ -23,7 +22,6 @@ const SOURCE_LABELS: Record<string, string> = {
 
 type RevenueSource = Revenue["source"];
 
-// ── Tooltip custom ────────────────────────────────────────────────────────────
 function CustomTooltip({ active, payload, label }: any) {
     if (!active || !payload?.length) return null;
     return (

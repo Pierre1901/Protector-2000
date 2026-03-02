@@ -1,52 +1,62 @@
-const API_KEY = import.meta.env.VITE_API_SECRET ?? "";
-console.log("API KEY:", API_KEY);
+// Toutes les requêtes partent avec credentials: "include"
+// pour que le cookie de session soit automatiquement envoyé.
+// Plus aucun secret dans le code frontend.
 
 async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
     const res = await fetch(path, {
         ...options,
+        credentials: "include", // envoie le cookie httpOnly
         headers: {
             "Content-Type": "application/json",
-            "x-api-key": API_KEY,
             ...options.headers,
         },
     });
+    if (res.status === 401) throw new Error("UNAUTHORIZED");
     if (!res.ok) throw new Error(`API error ${res.status}`);
     return res.json() as Promise<T>;
 }
 
-// ── Types ────────────────────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface Stats {
     members: number;
     viewers: number;
-    subs: number;
-    warns: number;
-    bans: number;
+    subs:    number;
+    warns:   number;
+    bans:    number;
 }
 
 export interface Member {
-    id: string;
+    id:   string;
     name: string;
     role: "sub" | "viewer" | string;
 }
 
 export interface Revenue {
-    id: string;
-    date: string;
-    source: "bits" | "sub" | "gift_sub" | "raid" | "donation" | "other";
-    amount: number;
+    id:           string;
+    date:         string;
+    source:       "bits" | "sub" | "gift_sub" | "raid" | "donation" | "other";
+    amount:       number;
     description?: string;
 }
 
-// ── Discord ──────────────────────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────────────────────────────
+
+export const login  = (password: string) =>
+    apiFetch<{ ok: boolean }>("/api/login",  { method: "POST", body: JSON.stringify({ password }) });
+
+export const logout = () =>
+    apiFetch<{ ok: boolean }>("/api/logout", { method: "POST" });
+
+// ── Discord ───────────────────────────────────────────────────────────────────
 
 export const getStats   = () => apiFetch<Stats>("/api/stats");
 export const getMembers = () => apiFetch<Member[]>("/api/members");
 
-// ── Finance ──────────────────────────────────────────────────────────────────
+// ── Finance ───────────────────────────────────────────────────────────────────
 
-export const getRevenues    = () => apiFetch<Revenue[]>("/api/finance/revenues");
-export const addRevenue     = (data: Omit<Revenue, "id">) =>
+export const getRevenues   = () => apiFetch<Revenue[]>("/api/finance/revenues");
+export const addRevenue    = (data: Omit<Revenue, "id">) =>
     apiFetch<Revenue>("/api/finance/revenues", { method: "POST", body: JSON.stringify(data) });
-export const deleteRevenue  = (id: string) =>
+export const deleteRevenue = (id: string) =>
     apiFetch<{ ok: boolean }>(`/api/finance/revenues/${id}`, { method: "DELETE" });
