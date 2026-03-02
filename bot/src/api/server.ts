@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cors({
     origin:      "http://localhost:3000",
     methods:     ["GET", "POST", "DELETE"],
-    credentials: true, // indispensable pour les cookies
+    credentials: true,
 }));
 
 // ── Session ───────────────────────────────────────────────────────────────────
@@ -25,7 +25,7 @@ app.use(session({
     resave:            false,
     saveUninitialized: false,
     cookie: {
-        httpOnly: true,   // invisible en JS / devtools
+        httpOnly: true,
         sameSite: "lax",
         maxAge:   1000 * 60 * 60 * 8, // 8h
     },
@@ -103,6 +103,22 @@ app.get("/api/members", async (req, res) => {
         res.status(500).json({ error: "Erreur serveur" });
     }
 });
+
+// ── Refresh ─────────────────────────────────────────────────────────────────────
+app.get("/api/members", async (req, res) => {
+    try {
+        const guild = client.guilds.cache.first();
+        if (!guild) return res.json({ ok: false });
+
+        await guild.members.fetch();
+        res.json({ ok: true });
+    } catch (e) {
+        console.error("REFRESH ERROR:", e);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
+});
+
+
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 export function startApiServer() {

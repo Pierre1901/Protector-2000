@@ -332,6 +332,7 @@ export function Navbar({ blinking, live, currentPage, onNavigate, onLogout }: Na
     const navItems = [
         { id: "home",    label: "Vue générale", icon: "🐉" },
         { id: "finance", label: "Finance",      icon: "💰" },
+
     ];
 
     return (
