@@ -52,6 +52,7 @@ export const logout = () =>
 
 export const getStats   = () => apiFetch<Stats>("/api/stats");
 export const getMembers = () => apiFetch<Member[]>("/api/members");
+export const refresh    = () => apiFetch<{ ok: boolean }>("/api/refresh");
 
 // ── Finance ───────────────────────────────────────────────────────────────────
 

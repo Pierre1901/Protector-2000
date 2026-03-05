@@ -114,10 +114,12 @@ export function StatCard({ label, value, icon, accent, delay = 0 }: StatCardProp
 }
 
 // ── Dragon Eye ────────────────────────────────────────────────────────────────
-export function DragonEye({ blinking }: { blinking: boolean }) {
+export function DragonEye({ blinking, onClick }: { blinking: boolean; onClick?: () => void }) {
     const svgRef = useRef<SVGSVGElement>(null);
     const [pupil, setPupil] = useState({ x: 0, y: 0 });
     const [pulse, setPulse] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
+    const [isClicking, setIsClicking] = useState(false);
 
     // Suivi souris
     useEffect(() => {
@@ -161,11 +163,34 @@ export function DragonEye({ blinking }: { blinking: boolean }) {
         "M60,40 Q54,48 42,56", "M60,40 Q66,48 78,56",
     ];
 
-    const veinOpacity = 0.15 + pulse * 0.35;
-    const glowSize    = 1.2 + pulse * 0.8;
+    const veinOpacity = 0.15 + pulse * 0.35 + (isHovered ? 0.2 : 0);
+    const glowSize    = 1.2 + pulse * 0.8 + (isHovered ? 0.4 : 0);
+
+    const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
+        if (onClick) {
+            setIsClicking(true);
+            setTimeout(() => setIsClicking(false), 200);
+            onClick();
+        }
+    };
 
     return (
-        <svg ref={svgRef} viewBox="0 0 120 80" style={{ width: 120, height: 80, overflow: "visible" }}>
+        <svg
+            ref={svgRef}
+            viewBox="0 0 120 80"
+            style={{
+                width: 120,
+                height: 80,
+                overflow: "visible",
+                cursor: onClick ? "pointer" : "default",
+                transform: isClicking ? "scale(0.95)" : isHovered ? "scale(1.05)" : "scale(1)",
+                transition: "transform 0.15s ease",
+            }}
+            onClick={handleClick}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            title={onClick ? "Cliquer pour rafraîchir les données" : undefined}
+        >
             <defs>
                 {/* Halo externe vert acide */}
                 <radialGradient id="eyeHalo" cx="50%" cy="50%" r="50%">
@@ -326,9 +351,10 @@ interface NavbarProps {
     currentPage: string;
     onNavigate: (page: string) => void;
     onLogout: () => void;
+    onRefresh?: () => void;
 }
 
-export function Navbar({ blinking, live, currentPage, onNavigate, onLogout }: NavbarProps) {
+export function Navbar({ blinking, live, currentPage, onNavigate, onLogout, onRefresh }: NavbarProps) {
     const navItems = [
         { id: "home",    label: "Vue générale", icon: "🐉" },
         { id: "finance", label: "Finance",      icon: "💰" },
@@ -361,7 +387,7 @@ export function Navbar({ blinking, live, currentPage, onNavigate, onLogout }: Na
                     <svg viewBox="0 0 100 100" style={{ position: "absolute", width: 64, height: 64, animation: "rotateCCW 12s linear infinite" }}>
                         <circle cx="50" cy="50" r="46" fill="none" stroke="#c0306a" strokeWidth="0.6" strokeDasharray="3 6" opacity="0.6" />
                     </svg>
-                    <DragonEye blinking={blinking} />
+                    <DragonEye blinking={blinking} onClick={onRefresh} />
                 </div>
                 <div>
                     <h1 style={{

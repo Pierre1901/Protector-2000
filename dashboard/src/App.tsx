@@ -3,7 +3,7 @@ import { Navbar } from "./components/Ui";
 import HomePage    from "./pages/Homepage";
 import FinancePage from "./pages/Financepage";
 import LoginPage   from "./pages/LoginPage";
-import { getStats, logout } from "./api/Client";
+import { getStats, logout, refresh } from "./api/Client";
 
 export default function App() {
     const [page,          setPage]          = useState("home");
@@ -32,6 +32,15 @@ export default function App() {
     const handleLogout = async () => {
         await logout();
         setAuthenticated(false);
+    };
+
+    const handleRefresh = async () => {
+        try {
+            await refresh();
+            window.location.reload();
+        } catch (error) {
+            console.error("Refresh failed:", error);
+        }
     };
 
     if (authenticated === null) {
@@ -74,6 +83,7 @@ export default function App() {
                     currentPage={page}
                     onNavigate={setPage}
                     onLogout={handleLogout}
+                    onRefresh={handleRefresh}
                 />
 
                 <main style={{ flex: 1 }}>

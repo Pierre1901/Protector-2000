@@ -105,7 +105,7 @@ app.get("/api/members", async (req, res) => {
 });
 
 // ── Refresh ─────────────────────────────────────────────────────────────────────
-app.get("/api/members", async (req, res) => {
+app.get("/api/refresh", async (req, res) => {
     try {
         const guild = client.guilds.cache.first();
         if (!guild) return res.json({ ok: false });
